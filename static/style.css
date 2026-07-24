@@ -1,6 +1,4 @@
-* { 
-  box-sizing: border-box; 
-}
+* { box-sizing: border-box; }
 
 html, body {
   height: 100%;
@@ -40,15 +38,8 @@ html, body {
   animation: pulse 2.5s infinite;
 }
 
-.title { 
-  font-size: 18px; 
-  font-weight: 700; 
-}
-
-.subtitle { 
-  font-size: 13.5px; 
-  color: #94a3d8; 
-}
+.title { font-size: 18px; font-weight: 700; }
+.subtitle { font-size: 13.5px; color: #94a3d8; }
 
 /* چت */
 .chat {
@@ -72,14 +63,8 @@ html, body {
 }
 
 @keyframes bubblePop {
-  from { 
-    opacity: 0; 
-    transform: translateY(25px) scale(0.9); 
-  }
-  to { 
-    opacity: 1; 
-    transform: translateY(0) scale(1); 
-  }
+  from { opacity: 0; transform: translateY(25px) scale(0.9); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 .bubble.user {
@@ -130,8 +115,8 @@ textarea:focus {
   box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.25);
 }
 
-/* دکمه‌ها */
-button {
+/* دکمه‌های جانبی */
+#attachBtn, #micBtn, #imgGenBtn {
   width: 48px;
   height: 48px;
   border-radius: 18px;
@@ -140,48 +125,40 @@ button {
   border: 2px solid #4f46e5;
   font-size: 20px;
   cursor: pointer;
-  transition: all 0.25s;
 }
 
-button:hover {
-  transform: scale(1.08);
-  background: #374151;
-}
-
-/* دکمه ارسال - دایره سفید با فلش */
-button#send {
-  width: 54px;
-  height: 54px;
-  border-radius: 50%;
-  background: #ffffff;
-  color: #1e2937;
-  font-size: 28px;
-  font-weight: bold;
-  border: none;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.35);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-}
-
-button#send::before {
-  content: "↑";
-}
-
-button#send:disabled {
-  background: #94a3b8;
-  color: #334155;
-}
-
-/* دکمه‌های میکروفون و عکس */
 #micBtn.active, #imgGenBtn.active {
   background: #6366f1;
   color: white;
-  border-color: #818cf8;
 }
 
-/* انیمیشن */
+/* دکمه ارسال - دایره سفید با فلش ↑ */
+button#send {
+  width: 54px !important;
+  height: 54px !important;
+  border-radius: 50% !important;
+  background: #ffffff !important;
+  color: #1e2937 !important;
+  font-size: 28px !important;
+  font-weight: bold !important;
+  border: none !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.35) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 !important;
+  min-width: 54px !important;
+}
+
+button#send::before {
+  content: "↑" !important;
+}
+
+button#send:disabled {
+  background: #94a3b8 !important;
+  color: #334155 !important;
+}
+
 @keyframes pulse {
   0%, 100% { box-shadow: 0 0 12px #34d399; }
   50% { box-shadow: 0 0 25px #34d399; }
