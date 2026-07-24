@@ -1,7 +1,7 @@
 import os
 import json
 import requests
-from flask import Flask, render_template, request, Response, stream_with_context
+from flask import Flask, render_template, request, Response, stream_with_context, jsonify
 
 app = Flask(__name__)
 
@@ -11,10 +11,21 @@ app = Flask(__name__)
 #   export OPENROUTER_API_KEY="sk-or-xxxxxxxx"
 #   export OPENROUTER_BASE_URL="https://openrouter.ai/api/v1/chat/completions"
 #   export OPENROUTER_MODEL="openai/gpt-4o-mini"
+#   export OPENROUTER_IMAGE_MODEL="google/gemini-2.5-flash-image-preview:free"
 # ---------------------------------------------------------
 API_KEY = os.environ.get("OPENROUTER_API_KEY", "")
 BASE_URL = os.environ.get("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1/chat/completions")
 MODEL = os.environ.get("OPENROUTER_MODEL", "openai/gpt-4o-mini")
+IMAGE_MODEL = os.environ.get("OPENROUTER_IMAGE_MODEL", "google/gemini-2.5-flash-image-preview:free")
+
+
+def _headers():
+    return {
+        "Authorization": f"Bearer {API_KEY}",
+        "Content-Type": "application/json",
+        "HTTP-Referer": "https://termux-ai-chat.local",
+        "X-Title": "Termux AI Chat",
+    }
 
 
 @app.route("/")
@@ -30,14 +41,6 @@ def chat():
     if not API_KEY:
         return {"error": "OPENROUTER_API_KEY تنظیم نشده. اول اونو ست کن."}, 400
 
-    headers = {
-        "Authorization": f"Bearer {API_KEY}",
-        "Content-Type": "application/json",
-        # این دوتا اختیاریه ولی OpenRouter پیشنهاد میکنه بفرستیش
-        "HTTP-Referer": "https://termux-ai-chat.local",
-        "X-Title": "Termux AI Chat",
-    }
-
     payload = {
         "model": MODEL,
         "messages": messages,
@@ -46,7 +49,7 @@ def chat():
 
     def generate():
         try:
-            with requests.post(BASE_URL, headers=headers, json=payload, stream=True, timeout=120) as r:
+            with requests.post(BASE_URL, headers=_headers(), json=payload, stream=True, timeout=120) as r:
                 r.encoding = "utf-8"
                 if r.status_code != 200:
                     err_text = r.text
@@ -70,6 +73,44 @@ def chat():
         mimetype="text/event-stream",
         content_type="text/event-stream; charset=utf-8",
     )
+
+
+@app.route("/api/generate-image", methods=["POST"])
+def generate_image():
+    """یک پرامپت متنی میگیره و از مدل تصویرساز رایگان Gemini عکس تولید میکنه."""
+    data = request.get_json(force=True)
+    prompt = (data.get("prompt") or "").strip()
+
+    if not API_KEY:
+        return jsonify({"error": "OPENROUTER_API_KEY تنظیم نشده."}), 400
+    if not prompt:
+        return jsonify({"error": "متن توصیف عکس خالیه."}), 400
+
+    payload = {
+        "model": IMAGE_MODEL,
+        "messages": [{"role": "user", "content": prompt}],
+        "modalities": ["image", "text"],
+    }
+
+    try:
+        r = requests.post(BASE_URL, headers=_headers(), json=payload, timeout=120)
+        r.encoding = "utf-8"
+        if r.status_code != 200:
+            return jsonify({"error": r.text}), 400
+
+        result = r.json()
+        message = result.get("choices", [{}])[0].get("message", {})
+        images = message.get("images", [])
+
+        if not images:
+            text_fallback = message.get("content", "")
+            return jsonify({"error": "مدل عکسی برنگردوند. پاسخ متنی: " + (text_fallback or "خالی")}), 400
+
+        image_url = images[0].get("image_url", {}).get("url", "")
+        return jsonify({"image_url": image_url})
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
 
 
 if __name__ == "__main__":

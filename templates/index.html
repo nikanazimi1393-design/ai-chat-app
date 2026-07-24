@@ -27,6 +27,7 @@
       <input id="fileInput" type="file" accept="image/*" hidden>
       <button id="attachBtn" type="button" title="ارسال عکس">📷</button>
       <button id="micBtn" type="button" title="ورودی صوتی">🎤</button>
+      <button id="imgGenBtn" type="button" title="حالت تولید عکس">🖼️</button>
       <textarea id="input" placeholder="پیامت رو بنویس یا میکروفون رو بزن..." rows="1"></textarea>
       <button id="send" type="submit">ارسال</button>
     </form>
@@ -40,12 +41,14 @@ const sendBtn = document.getElementById('send');
 const attachBtn = document.getElementById('attachBtn');
 const fileInput = document.getElementById('fileInput');
 const micBtn = document.getElementById('micBtn');
+const imgGenBtn = document.getElementById('imgGenBtn');
 const previewBox = document.getElementById('preview');
 const previewImg = document.getElementById('previewImg');
 const removeImgBtn = document.getElementById('removeImg');
 
 let messages = [];
 let pendingImage = null; // base64 data URL
+let imageGenMode = false;
 
 function addBubble(role, text, imageDataUrl) {
   const div = document.createElement('div');
@@ -72,7 +75,16 @@ input.addEventListener('input', () => {
   input.style.height = Math.min(input.scrollHeight, 140) + 'px';
 });
 
-// ---------- Image attach ----------
+// ---------- Image generation mode toggle ----------
+imgGenBtn.addEventListener('click', () => {
+  imageGenMode = !imageGenMode;
+  imgGenBtn.classList.toggle('active', imageGenMode);
+  input.placeholder = imageGenMode
+    ? 'توصیف عکسی که میخوای بسازه رو بنویس...'
+    : 'پیامت رو بنویس یا میکروفون رو بزن...';
+});
+
+// ---------- Image attach (send image TO the AI) ----------
 attachBtn.addEventListener('click', () => fileInput.click());
 
 fileInput.addEventListener('change', () => {
@@ -82,7 +94,6 @@ fileInput.addEventListener('change', () => {
   reader.onload = () => {
     const img = new Image();
     img.onload = () => {
-      // resize/compress to keep payload small
       const maxDim = 1024;
       let { width, height } = img;
       if (width > maxDim || height > maxDim) {
@@ -158,6 +169,49 @@ form.addEventListener('submit', async (e) => {
   const text = input.value.trim();
   if (!text && !pendingImage) return;
 
+  // ---------- Image generation flow ----------
+  if (imageGenMode) {
+    if (!text) return;
+    addBubble('user', text);
+    input.value = '';
+    input.style.height = 'auto';
+    sendBtn.disabled = true;
+
+    const assistantBubble = addBubble('assistant', 'در حال ساخت عکس...');
+
+    try {
+      const res = await fetch('/api/generate-image', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: text })
+      });
+      const data = await res.json();
+
+      if (data.error) {
+        assistantBubble.textContent = 'خطا: ' + data.error;
+      } else {
+        assistantBubble.textContent = '';
+        const img = document.createElement('img');
+        img.src = data.image_url;
+        img.className = 'bubble-img';
+        assistantBubble.appendChild(img);
+
+        const dlLink = document.createElement('a');
+        dlLink.href = data.image_url;
+        dlLink.download = 'generated-image.png';
+        dlLink.textContent = '⬇ دانلود عکس';
+        dlLink.className = 'download-link';
+        assistantBubble.appendChild(dlLink);
+      }
+    } catch (err) {
+      assistantBubble.textContent = 'خطا در اتصال: ' + err.message;
+    } finally {
+      sendBtn.disabled = false;
+    }
+    return;
+  }
+
+  // ---------- Normal chat flow ----------
   let content;
   if (pendingImage) {
     content = [];
