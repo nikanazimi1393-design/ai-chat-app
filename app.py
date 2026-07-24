@@ -16,7 +16,7 @@ app = Flask(__name__)
 API_KEY = os.environ.get("OPENROUTER_API_KEY", "")
 BASE_URL = os.environ.get("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1/chat/completions")
 MODEL = os.environ.get("OPENROUTER_MODEL", "openai/gpt-4o-mini")
-IMAGE_MODEL = os.environ.get("OPENROUTER_IMAGE_MODEL", "google/gemini-2.5-flash-image-preview:free")
+IMAGE_MODEL = os.environ.get("OPENROUTER_IMAGE_MODEL", "google/gemini-2.5-flash-image")
 
 
 def _headers():
