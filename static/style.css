@@ -1,6 +1,4 @@
-* { 
-  box-sizing: border-box; 
-}
+* { box-sizing: border-box; }
 
 html, body {
   height: 100%;
@@ -19,9 +17,10 @@ html, body {
   max-width: 780px;
   margin: 0 auto;
   background: #0b0d12;
+  position: relative;
 }
 
-/* Topbar مثل Grok */
+/* Topbar */
 .topbar {
   padding: 16px 20px;
   background: #11141f;
@@ -29,7 +28,7 @@ html, body {
   display: flex;
   align-items: center;
   gap: 12px;
-  backdrop-filter: blur(10px);
+  z-index: 10;
 }
 
 .dot {
@@ -40,17 +39,20 @@ html, body {
   box-shadow: 0 0 10px #22c55e;
 }
 
-.title { 
-  font-size: 17px; 
-  font-weight: 600; 
+.title { font-size: 17px; font-weight: 600; }
+.subtitle { font-size: 13px; color: #64748b; }
+
+/* ساخته شده توسط */
+.made-by {
+  position: absolute;
+  top: 18px;
+  left: 20px;
+  font-size: 12px;
+  color: #475569;
+  z-index: 11;
 }
 
-.subtitle { 
-  font-size: 13px; 
-  color: #64748b; 
-}
-
-/* چت - مثل Grok */
+/* چت */
 .chat {
   flex: 1;
   overflow-y: auto;
@@ -90,15 +92,37 @@ html, body {
   border-bottom-left-radius: 4px;
 }
 
-.bubble-img {
-  max-width: 100%;
-  border-radius: 14px;
-  margin: 8px 0 6px;
+/* خوش‌آمدگویی */
+.welcome {
+  text-align: center;
+  margin: 80px auto 40px;
+  color: #94a3b8;
+  font-size: 17px;
+  line-height: 1.5;
+  padding: 0 30px;
 }
 
-/* Input Bar - مثل Grok */
+/* ارور اتصال */
+.error-message {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #1e2538;
+  border: 1px solid #ef4444;
+  color: #fca5a5;
+  padding: 20px 30px;
+  border-radius: 16px;
+  text-align: center;
+  font-size: 15.5px;
+  display: none;
+  z-index: 100;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+  max-width: 80%;
+}
+
+/* Input Bar */
 .inputbar {
-  position: relative;
   padding: 12px 16px 20px;
   background: #11141f;
   border-top: 1px solid #1e2538;
@@ -108,8 +132,6 @@ html, body {
   display: flex;
   align-items: flex-end;
   gap: 8px;
-  max-width: 780px;
-  margin: 0 auto;
 }
 
 textarea {
@@ -122,7 +144,6 @@ textarea {
   color: #e2e8f0;
   max-height: 160px;
   resize: none;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
 }
 
 textarea:focus {
@@ -130,7 +151,6 @@ textarea:focus {
   border-color: #6366f1;
 }
 
-/* دکمه ارسال - دایره سفید */
 button#send {
   width: 48px;
   height: 48px;
@@ -143,7 +163,6 @@ button#send {
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
 }
 
 button#send::before {
@@ -159,9 +178,4 @@ button#send::before {
   color: #94a3b8;
   border: 1px solid #334155;
   font-size: 20px;
-}
-
-#micBtn.active, #imgGenBtn.active {
-  background: #6366f1;
-  color: white;
 }
