@@ -1,4 +1,6 @@
-* { box-sizing: border-box; }
+* { 
+  box-sizing: border-box; 
+}
 
 html, body {
   height: 100%;
@@ -38,10 +40,17 @@ html, body {
   animation: pulse 2.5s infinite;
 }
 
-.title { font-size: 18px; font-weight: 700; }
-.subtitle { font-size: 13.5px; color: #94a3d8; }
+.title { 
+  font-size: 18px; 
+  font-weight: 700; 
+}
 
-/* چت - حالا جذاب‌تر */
+.subtitle { 
+  font-size: 13.5px; 
+  color: #94a3d8; 
+}
+
+/* چت */
 .chat {
   flex: 1;
   overflow-y: auto;
@@ -63,8 +72,14 @@ html, body {
 }
 
 @keyframes bubblePop {
-  from { opacity: 0; transform: translateY(25px) scale(0.9); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
+  from { 
+    opacity: 0; 
+    transform: translateY(25px) scale(0.9); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0) scale(1); 
+  }
 }
 
 .bubble.user {
@@ -92,4 +107,82 @@ html, body {
   padding: 16px 18px;
   background: rgba(15, 20, 40, 0.95);
   border-top: 1px solid #4f46e5;
-  backdrop-filter: blur(16
+  backdrop-filter: blur(16px);
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+textarea {
+  flex: 1;
+  background: #1e2338;
+  border: 2px solid #4f46e5;
+  border-radius: 20px;
+  padding: 14px 18px;
+  font-size: 15.5px;
+  color: #e0e7ff;
+  max-height: 160px;
+  resize: none;
+}
+
+textarea:focus {
+  border-color: #a5b4fc;
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.25);
+}
+
+/* دکمه‌ها */
+button {
+  width: 48px;
+  height: 48px;
+  border-radius: 18px;
+  background: #1e2338;
+  color: #c4d0ff;
+  border: 2px solid #4f46e5;
+  font-size: 20px;
+  cursor: pointer;
+  transition: all 0.25s;
+}
+
+button:hover {
+  transform: scale(1.08);
+  background: #374151;
+}
+
+/* دکمه ارسال - دایره سفید با فلش */
+button#send {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: #ffffff;
+  color: #1e2937;
+  font-size: 28px;
+  font-weight: bold;
+  border: none;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+button#send::before {
+  content: "↑";
+}
+
+button#send:disabled {
+  background: #94a3b8;
+  color: #334155;
+}
+
+/* دکمه‌های میکروفون و عکس */
+#micBtn.active, #imgGenBtn.active {
+  background: #6366f1;
+  color: white;
+  border-color: #818cf8;
+}
+
+/* انیمیشن */
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 12px #34d399; }
+  50% { box-shadow: 0 0 25px #34d399; }
+}
